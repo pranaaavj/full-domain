@@ -1,32 +1,32 @@
-import { useCallback, useEffect, useState } from 'react';
-import './App.css';
-import { debounce } from './debounce';
+import { useEffect, useState } from 'react';
+import { useRef } from 'react';
 
 function App() {
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState('');
+  let timer = useRef(null);
 
-  const callBackFetch = useCallback(
-    async function fetchData() {
-      try {
-        const res = await fetch(
-          `https://dummyjson.com/users/search?q=${query}`
-        );
-        const data = await res.json();
-        setUsers(data?.users || []);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    [query]
-  );
+  async function fetchData() {
+    try {
+      const res = await fetch(`https://dummyjson.com/users/search?q=${query}`);
+      const data = await res.json();
+      setUsers(data?.users || []);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  const callBackDebounce = useCallback(
-    () => debounce(callBackFetch, 2000),
-    [callBackFetch]
-  );
+  function debounce(fn, delay) {
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
 
-  const debouncedFetch = callBackDebounce();
+      timer.current = setTimeout(() => {
+        fn();
+      }, delay);
+    };
+  }
+
+  const debouncedFetch = debounce(fetchData, 2000);
 
   useEffect(() => {
     debouncedFetch();
@@ -40,8 +40,9 @@ function App() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        {users.map((user) => (
-          <div>{user.firstName + user.lastName}</div>
+
+        {users.map((user, indx) => (
+          <div key={indx}>{user.firstName + user.lastName}</div>
         ))}
       </div>
     </>

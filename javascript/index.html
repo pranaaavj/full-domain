@@ -3,13 +3,120 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Interactive Trie Visualizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f7f7f7;
+    }
+
+    input,
+    button {
+      padding: 8px;
+      margin: 4px;
+    }
+
+    .result,
+    .tree {
+      margin-top: 1rem;
+      white-space: pre;
+      font-family: monospace;
+      background: #fff;
+      padding: 1rem;
+      border: 1px solid #ccc;
+    }
+  </style>
 </head>
 
 <body>
-  <div id="root"></div>
-  <script src="script.js"></script>
+  <h2>Trie Visualizer</h2>
+
+  <input type="text" id="wordInput" placeholder="Enter word to insert" />
+  <button onclick="insertWord()">Insert</button>
+
+  <input type="text" id="prefixInput" placeholder="Enter prefix for autocomplete" />
+  <button onclick="autocomplete()">Autocomplete</button>
+
+  <div class="result" id="autocompleteResult"></div>
+  <div class="tree" id="treeDisplay"></div>
+
+  <script>
+    class Node {
+      constructor() {
+        this.children = {};
+        this.eow = false;
+      }
+    }
+
+    class Trie {
+      constructor() {
+        this.root = new Node();
+      }
+
+      insert(str) {
+        let current = this.root;
+        for (const letter of str) {
+          if (!current.children[letter]) {
+            current.children[letter] = new Node();
+          }
+          current = current.children[letter];
+        }
+        current.eow = true;
+      }
+
+      autoComplete(prefix) {
+        const result = [];
+
+        let current = this.root;
+        for (const letter of prefix) {
+          if (!current.children[letter]) return result;
+          current = current.children[letter];
+        }
+
+        const helper = (node, path) => {
+          if (node.eow) result.push(path);
+          for (const [ch, childNode] of Object.entries(node.children)) {
+            helper(childNode, path + ch);
+          }
+        };
+
+        helper(current, prefix);
+        return result;
+      }
+
+      print(node = this.root, indent = '') {
+        let output = '';
+        for (const [letter, child] of Object.entries(node.children)) {
+          output += `${indent}${letter}${child.eow ? '*' : ''}\n`;
+          output += this.print(child, indent + '  ');
+        }
+        return output;
+      }
+    }
+
+    const trie = new Trie();
+
+    function insertWord() {
+      const word = document.getElementById('wordInput').value.trim();
+      if (word) {
+        trie.insert(word);
+        document.getElementById('wordInput').value = '';
+        updateTree();
+      }
+    }
+
+    function autocomplete() {
+      const prefix = document.getElementById('prefixInput').value.trim();
+      const results = trie.autoComplete(prefix);
+      document.getElementById('autocompleteResult').textContent =
+        results.length ? `Matches: ${results.join(', ')}` : 'No matches found.';
+    }
+
+    function updateTree() {
+      document.getElementById('treeDisplay').textContent = trie.print();
+    }
+  </script>
 </body>
 
 </html>

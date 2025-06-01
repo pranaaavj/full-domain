@@ -1,6 +1,10 @@
-setTimeout(() => {
-  console.log('SetTimeout');
-});
+function greetName(cb) {
+  const name = 'Pranav';
+  cb(name);
+}
 
-// Promise runs first because it's pushed to macro task queue.
-Promise.resolve().then(() => console.log('Promise'));
+greetName(consoleName);
+
+function consoleName(name) {
+  console.log(name);
+}
