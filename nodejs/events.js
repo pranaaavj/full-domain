@@ -1,11 +1,9 @@
 import { EventEmitter } from 'events';
 
-const event = new EventEmitter();
+const events = new EventEmitter();
 
-event.on('walk', (...rest) => {
-  const [greet, name, age] = rest;
-  console.log(greet + ' ' + name + ' ' + age);
-  console.log('Walking...');
+events.on('run', (name) => {
+  console.log(name + ' is running...');
 });
 
-event.emit('walk', ...['Hey there', 'Pranav', 'of age 22']);
+events.emit('run', 'Pranav');

@@ -17,6 +17,22 @@ app.get('/', (req, res) => {
   });
 });
 
+app.use((req, res, next) => {
+  if (!Object.entries(req.query).length)
+    return res.json({ message: 'Please pass query params' });
+  next();
+});
+
+app.get('/new/:num1', (req, res) => {
+  const { num1 } = req.params;
+  const { num2 } = req.query;
+
+  const answer = Number(num1) + Number(num2);
+  res.json({
+    answer,
+  });
+});
+
 app.listen(PORT, (err) => {
   console.log('server started');
 });

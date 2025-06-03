@@ -73,14 +73,14 @@ class BinarySearchTree {
   }
 
   findDepth(value, root = this.root, depth = 0) {
-    if (!root) return -1;
+    if (!root) return false;
 
     if (root.val == value) return depth;
 
-    const left = this.findDepth(value, root.left, depth + 1);
-    if (left !== -1) return left;
-
-    return this.findDepth(value, root.right, depth + 1);
+    return (
+      this.findDepth(value, root.left, depth + 1) ||
+      this.findDepth(value, root.right, depth + 1)
+    );
   }
 
   print(root = this.root) {
@@ -170,4 +170,4 @@ bst.insert(50);
 bst.insert(30);
 bst.insert(70);
 
-console.log(bst.secondLargest());
+console.log(bst.findDepth(70));
