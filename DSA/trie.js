@@ -24,50 +24,50 @@ class Trie {
   }
 
   autoComplete(prefix) {
-    const result = [];
-
     let current = this.root;
     for (const letter of prefix) {
       if (!current.children[letter]) return;
       current = current.children[letter];
     }
 
-    const helper = (current, prefix) => {
-      if (current.eow) result.push(prefix);
+    const words = this.getAll(current, prefix);
+    return words;
+  }
 
+  getAll(root = this.root, prefix = '') {
+    const current = root;
+    const words = [];
+
+    const helper = (current, prefix) => {
+      if (current.eow) words.push(prefix);
       for (const [letter, children] of Object.entries(current.children)) {
         helper(children, prefix + letter);
       }
     };
 
     helper(current, prefix);
-
-    return result;
+    return words;
   }
 
-  getAllWords() {
-    let result = [];
+  longestCommonPrefix() {
+    let current = this.root;
+    let prefix = '';
 
-    const helper = (current, prefix) => {
-      if (current.eow) result.push(prefix);
+    while (current && Object.keys(current.children).length < 2) {
+      let currentLetter = Object.keys(current.children)[0];
+      prefix += currentLetter;
+      current = current.children[currentLetter];
+    }
 
-      for (const [letter, children] of Object.entries(current.children)) {
-        helper(children, prefix + letter);
-      }
-    };
-
-    helper(this.root, '');
-
-    return result;
+    return prefix;
   }
 }
 
-const tri = new Trie();
+const trie = new Trie();
 
-tri.insert('apple');
-tri.insert('appricot');
-tri.insert('pranav');
-tri.insert('paaru');
-tri.insert('parvathy');
+trie.insert('apprle');
+trie.insert('appricot');
+trie.insert('approach');
+trie.insert('apprlication');
 
-console.log(tri.getAllWords());
+console.log(trie.longestCommonPrefix());

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PizzaCard from './PizzaCard';
 import { useContext } from 'react';
-import { CartContext } from './CartContext';
+import { CartContext } from './context/CartContext';
 
 const Menu = () => {
   const [items, setItems] = useState([]);
   const { cartItems, addToCart, removeFromCart, increaseCount, decreaseCount } =
     useContext(CartContext);
-
-  console.log(cartItems);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -26,8 +24,6 @@ const Menu = () => {
 
     fetchItems();
   }, []);
-
-  console.log(items);
 
   return (
     <div>
